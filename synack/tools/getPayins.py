@@ -50,3 +50,4 @@ for payin in payins:
 
     if j == total_payins:
         print("Year-Month: " + str(current_year) + "-" + str(current_month) + " Total payin: $" + str("%.2f" % round(month_payins_amount, 2)))
+
