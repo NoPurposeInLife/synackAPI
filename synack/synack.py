@@ -966,9 +966,9 @@ class synack:
                 roes.append(jsonResponse['roes'][i])
             return(roes)
 
-######################
-## Get Transactions ##
-######################
+#################################
+## Get Transactions (Cash Out) ##
+#################################
     def getTransactions(self):
         pageIterator=1
         breakOuterLoop = 0
@@ -984,6 +984,33 @@ class synack:
                 break
             for i in range(len(jsonResponse)):
                 if jsonResponse[i]["title"] == "CashOut":
+                    if float(jsonResponse[i]['amount']) < 0:
+                        amount = float(jsonResponse[i]['amount']) * -1
+                    else:
+                        amount = float(jsonResponse[i]['amount'])
+                    ts = datetime.datetime.fromtimestamp(jsonResponse[i]['created_at'])
+                    transactions.append(ts.strftime('%Y-%m-%d')+","+str(amount))
+            pageIterator=pageIterator+1
+        return(transactions)
+
+#################################
+## Get Transactions (Cash In) ##
+#################################
+    def getTransactions_CashIn(self):
+        pageIterator=1
+        breakOuterLoop = 0
+        transactions = []
+        while True:
+            transactionUrl = self.url_transactions+"?page="+str(pageIterator)+"&per_page=15"
+            response = self.try_requests("GET", transactionUrl, 10)
+            try:
+                jsonResponse = response.json()
+            except:
+                return(1)
+            if not jsonResponse:
+                break
+            for i in range(len(jsonResponse)):
+                if jsonResponse[i]["title"] != "CashOut":
                     if float(jsonResponse[i]['amount']) < 0:
                         amount = float(jsonResponse[i]['amount']) * -1
                     else:
